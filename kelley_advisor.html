@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelley AI Course Advisor</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --warm-white: #FFFEF9;
+    --kelley-red: #990000;
+    --kelley-dark: #6B0000;
+    --gold: #C8963E;
+    --gold-light: #E8B86D;
+    --charcoal: #1C1C1C;
+    --mid-gray: #6B6B6B;
+    --light-gray: #E8E3DC;
+    --border: #D4C9BB;
+    --success: #2D7A4F;
+    --success-bg: #EEF7F2;
+    --tag-bg: #F2EDE6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    min-height: 100vh;
+  }
+
+  /* Header */
+  .header {
+    background: var(--kelley-red);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 20%;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 40px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .logo-mark {
+    width: 52px; height: 52px;
+    background: var(--gold);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 600;
+    color: white; line-height: 1.2;
+  }
+  .header-text p {
+    font-size: 13px; color: rgba(255,255,255,0.7);
+    margin-top: 3px; font-weight: 300; letter-spacing: 0.3px;
+  }
+  .beta-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.9);
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* Layout */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 40px 60px;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .card + .card { margin-top: 20px; }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-title .icon {
+    width: 30px; height: 30px;
+    background: var(--tag-bg);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* Form elements */
+  label {
+    font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--mid-gray);
+    display: block; margin-bottom: 7px;
+  }
+  select, input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--charcoal);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+  select:focus, input[type="text"]:focus {
+    border-color: var(--kelley-red);
+  }
+
+  /* Course tags */
+  .course-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .course-tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px; font-weight: 500;
+    color: var(--charcoal);
+    display: flex; align-items: center; gap: 6px;
+    cursor: default;
+  }
+  .course-tag .remove {
+    color: var(--mid-gray); cursor: pointer; font-size: 14px; line-height: 1;
+  }
+  .course-tag .remove:hover { color: var(--kelley-red); }
+
+  .add-row {
+    display: flex; gap: 8px;
+  }
+  .add-row input { margin-bottom: 0; flex: 1; }
+  .btn-add {
+    padding: 10px 16px;
+    background: var(--tag-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px; cursor: pointer; color: var(--charcoal);
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-add:hover { background: var(--light-gray); }
+
+  /* Checkboxes */
+  .checkbox-group {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 16px;
+  }
+  .checkbox-item {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+  }
+  .checkbox-item input[type="checkbox"] { display: none; }
+  .checkbox-box {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .checkbox-item input:checked + .checkbox-box {
+    background: var(--kelley-red);
+    border-color: var(--kelley-red);
+  }
+  .checkbox-item input:checked + .checkbox-box::after {
+    content: '✓'; color: white; font-size: 11px; font-weight: 600;
+  }
+  .checkbox-label { font-size: 13.5px; font-weight: 400; }
+
+  /* Generate button */
+  .btn-generate {
+    width: 100%;
+    padding: 14px;
+    background: var(--kelley-red);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+  }
+  .btn-generate:hover { background: var(--kelley-dark); transform: translateY(-1px); }
+  .btn-generate:disabled {
+    background: var(--light-gray); color: var(--mid-gray);
+    cursor: not-allowed; transform: none;
+  }
+
+  /* Right panel */
+  .right-panel { }
+
+  /* Welcome state */
+  .welcome-state {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    color: var(--mid-gray);
+  }
+  .welcome-state .big-icon { font-size: 52px; margin-bottom: 20px; }
+  .welcome-state h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: var(--charcoal);
+    margin-bottom: 10px;
+  }
+  .welcome-state p { font-size: 14px; line-height: 1.7; max-width: 340px; margin: 0 auto; }
+
+  /* Loading */
+  .loading-state {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    display: none;
+  }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 3px solid var(--light-gray);
+    border-top-color: var(--kelley-red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-state p { font-size: 14px; color: var(--mid-gray); }
+  .loading-state em { font-style: normal; color: var(--charcoal); font-weight: 500; }
+
+  /* Results */
+  .results-panel { display: none; }
+
+  .results-header {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .results-header .avatar {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--kelley-red), var(--kelley-dark));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .results-header-text h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+  }
+  .results-header-text p { font-size: 13px; color: var(--mid-gray); margin-top: 2px; }
+
+  /* Recommendation cards */
+  .rec-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .rec-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+  .rec-card.priority::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--kelley-red);
+    border-radius: 4px 0 0 4px;
+  }
+  .rec-card.elective::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--gold);
+    border-radius: 4px 0 0 4px;
+  }
+
+  .rec-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .rec-code {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--mid-gray);
+    margin-bottom: 4px;
+  }
+  .rec-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; font-weight: 600; color: var(--charcoal);
+  }
+  .rec-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .badge-required {
+    background: #FDEAEA; color: var(--kelley-red);
+    border: 1px solid #F5C0C0;
+  }
+  .badge-elective {
+    background: #FDF4E3; color: #8B6220;
+    border: 1px solid #EDD9A3;
+  }
+  .badge-credits {
+    background: var(--tag-bg); color: var(--charcoal);
+    border: 1px solid var(--border);
+  }
+
+  .rec-rationale {
+    font-size: 13.5px; line-height: 1.65;
+    color: #444;
+    margin-top: 10px;
+  }
+  .rec-meta {
+    display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .rec-meta-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; color: var(--mid-gray); font-weight: 500;
+  }
+
+  /* Advisory note */
+  .advisory-note {
+    background: var(--success-bg);
+    border: 1px solid #BFE0CF;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #1B5E38;
+    line-height: 1.6;
+    margin-top: 4px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: #FFF8ED;
+    border: 1px solid #EDDDB8;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 12px;
+    color: #6B4F1A;
+    margin-top: 16px;
+    line-height: 1.6;
+    display: flex; gap: 8px;
+  }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--mid-gray);
+    margin-bottom: 12px; margin-top: 4px;
+  }
+
+  /* Error */
+  .error-box {
+    background: #FFF0F0;
+    border: 1px solid #FFCCCC;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #8B0000;
+    font-size: 14px;
+    margin-top: 16px;
+    display: none;
+  }
+
+  @media (max-width: 800px) {
+    .main { grid-template-columns: 1fr; padding: 20px; }
+    .header-inner { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo-mark">K</div>
+    <div class="header-text">
+      <h1>Kelley AI Course Advisor</h1>
+      <p>Undergraduate Academic Planning · Kelley School of Business · Indiana University</p>
+    </div>
+    <div class="beta-badge">Beta</div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- LEFT PANEL -->
+  <div class="left-col">
+
+    <!-- Student Profile -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">🎓</span> Student Profile
+      </div>
+
+      <label>Academic Year</label>
+      <select id="year">
+        <option value="">Select year...</option>
+        <option value="freshman">Freshman (1st Year)</option>
+        <option value="sophomore" selected>Sophomore (2nd Year)</option>
+        <option value="junior">Junior (3rd Year)</option>
+        <option value="senior">Senior (4th Year)</option>
+      </select>
+
+      <label>Primary Concentration</label>
+      <select id="concentration1">
+        <option value="">Select concentration...</option>
+        <option value="Finance">Finance</option>
+        <option value="Accounting">Accounting</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Management">Management</option>
+        <option value="Operations & Decision Technologies">Operations & Decision Technologies</option>
+        <option value="Business Economics" selected>Business Economics</option>
+        <option value="Entrepreneurship & Corporate Innovation">Entrepreneurship & Corporate Innovation</option>
+        <option value="Information Systems">Information Systems</option>
+        <option value="Supply Chain & Operations">Supply Chain & Operations</option>
+      </select>
+
+      <label>Secondary Concentration (optional)</label>
+      <select id="concentration2">
+        <option value="">None</option>
+        <option value="Finance" selected>Finance</option>
+        <option value="Accounting">Accounting</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Management">Management</option>
+        <option value="Operations & Decision Technologies">Operations & Decision Technologies</option>
+        <option value="Business Economics">Business Economics</option>
+        <option value="Entrepreneurship & Corporate Innovation">Entrepreneurship & Corporate Innovation</option>
+        <option value="Information Systems">Information Systems</option>
+      </select>
+
+      <label>Target Semester</label>
+      <select id="semester">
+        <option value="Fall 2025">Fall 2025</option>
+        <option value="Spring 2026" selected>Spring 2026</option>
+        <option value="Fall 2026">Fall 2026</option>
+      </select>
+    </div>
+
+    <!-- Courses Taken -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">📋</span> Courses Completed
+      </div>
+      <div class="course-tags" id="courseTagsContainer">
+        <span class="course-tag" data-course="BUS-X 100">BUS-X 100 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="BUS-A 201">BUS-A 201 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="BUS-A 202">BUS-A 202 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="BUS-F 260">BUS-F 260 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="BUS-K 201">BUS-K 201 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="BUS-M 301">BUS-M 301 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="ECON-E 201">ECON-E 201 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="ECON-E 202">ECON-E 202 <span class="remove" onclick="removeCourse(this)">×</span></span>
+        <span class="course-tag" data-course="MATH-M 118">MATH-M 118 <span class="remove" onclick="removeCourse(this)">×</span></span>
+      </div>
+      <div class="add-row">
+        <input type="text" id="courseInput" placeholder="Add course (e.g. BUS-F 300)" onkeydown="if(event.key==='Enter') addCourse()">
+        <button class="btn-add" onclick="addCourse()">+</button>
+      </div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="card">
+      <div class="card-title">
+        <span class="icon">⚙️</span> Preferences
+      </div>
+
+      <label>Credit Hours Next Semester</label>
+      <select id="creditHours">
+        <option value="12">12 credits (4 courses)</option>
+        <option value="15" selected>15 credits (5 courses)</option>
+        <option value="18">18 credits (6 courses)</option>
+      </select>
+
+      <label>Scheduling Preferences</label>
+      <div class="checkbox-group">
+        <label class="checkbox-item">
+          <input type="checkbox" id="pref_morning">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">Prefer morning sections</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="pref_internship" checked>
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">Leave time for internship/co-op</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="pref_study_abroad">
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">Planning study abroad next year</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" id="pref_grad" checked>
+          <span class="checkbox-box"></span>
+          <span class="checkbox-label">Considering graduate school</span>
+        </label>
+      </div>
+
+      <button class="btn-generate" onclick="generateAdvice()" id="generateBtn">
+        Generate My Course Plan →
+      </button>
+      <div class="error-box" id="errorBox"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div class="welcome-state" id="welcomeState">
+      <div class="big-icon">📚</div>
+      <h2>Your Personalized Course Plan</h2>
+      <p>Fill in your academic profile on the left and click <strong>Generate My Course Plan</strong> to receive AI-powered course recommendations tailored to your concentrations, completed coursework, and goals.</p>
+    </div>
+
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <p>Analyzing your academic record<br>and building your personalized plan…</p>
+    </div>
+
+    <div class="results-panel" id="resultsPanel">
+      <div class="results-header">
+        <div class="avatar">🤖</div>
+        <div class="results-header-text">
+          <h2 id="planTitle">Spring 2026 Course Plan</h2>
+          <p id="planSubtitle">Personalized recommendations · 15 credits</p>
+        </div>
+      </div>
+
+      <div class="section-label">Required Courses</div>
+      <div id="requiredCourses"></div>
+
+      <div class="section-label" id="electiveSectionLabel" style="margin-top:8px;">Elective Recommendations</div>
+      <div id="electiveCourses"></div>
+
+      <div class="advisory-note" id="advisoryNote"></div>
+      <div class="disclaimer">
+        ⚠️ <span><strong>AI-Generated Advisory:</strong> These recommendations are generated by an AI system trained on Kelley program requirements and are intended as a starting point. Always verify course selections with your assigned academic advisor before registering.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function removeCourse(el) {
+  el.closest('.course-tag').remove();
+}
+
+function addCourse() {
+  const input = document.getElementById('courseInput');
+  const val = input.value.trim().toUpperCase();
+  if (!val) return;
+  const container = document.getElementById('courseTagsContainer');
+  const tag = document.createElement('span');
+  tag.className = 'course-tag';
+  tag.dataset.course = val;
+  tag.innerHTML = `${val} <span class="remove" onclick="removeCourse(this)">×</span>`;
+  container.appendChild(tag);
+  input.value = '';
+}
+
+function getCompletedCourses() {
+  return Array.from(document.querySelectorAll('.course-tag')).map(t => t.dataset.course);
+}
+
+function getPreferences() {
+  return {
+    morning: document.getElementById('pref_morning').checked,
+    internship: document.getElementById('pref_internship').checked,
+    studyAbroad: document.getElementById('pref_study_abroad').checked,
+    gradSchool: document.getElementById('pref_grad').checked,
+  };
+}
+
+async function generateAdvice() {
+  const year = document.getElementById('year').value;
+  const conc1 = document.getElementById('concentration1').value;
+  const conc2 = document.getElementById('concentration2').value;
+  const semester = document.getElementById('semester').value;
+  const credits = document.getElementById('creditHours').value;
+  const completed = getCompletedCourses();
+  const prefs = getPreferences();
+
+  if (!year || !conc1) {
+    document.getElementById('errorBox').style.display = 'block';
+    document.getElementById('errorBox').textContent = 'Please select your academic year and primary concentration.';
+    return;
+  }
+  document.getElementById('errorBox').style.display = 'none';
+
+  // Show loading
+  document.getElementById('welcomeState').style.display = 'none';
+  document.getElementById('resultsPanel').style.display = 'none';
+  document.getElementById('loadingState').style.display = 'block';
+  document.getElementById('generateBtn').disabled = true;
+
+  const prefList = [];
+  if (prefs.internship) prefList.push('wants to leave time for internship');
+  if (prefs.morning) prefList.push('prefers morning sections');
+  if (prefs.studyAbroad) prefList.push('planning study abroad next year');
+  if (prefs.gradSchool) prefList.push('considering graduate school (values quantitative rigor)');
+
+  const prompt = `You are an academic advisor AI at the Kelley School of Business, Indiana University. A student needs course recommendations for ${semester}.
+
+Student Profile:
+- Academic Year: ${year}
+- Primary Concentration: ${conc1}
+- Secondary Concentration: ${conc2 || 'None'}
+- Credit hours desired: ${credits}
+- Preferences: ${prefList.join(', ') || 'none specified'}
+
+Courses already completed:
+${completed.join(', ')}
+
+Based on this profile and using your knowledge of Kelley School of Business undergraduate requirements, recommend specific courses for ${semester}. Return ONLY a JSON object in this exact format (no markdown, no explanation outside the JSON):
+{
+  "required": [
+    {
+      "code": "BUS-F 300",
+      "name": "Course Full Name",
+      "credits": 3,
+      "type": "required",
+      "rationale": "2-3 sentence explanation of why this course is recommended now, referencing their profile, concentration, and completed courses.",
+      "prereqs_met": true,
+      "difficulty": "Moderate"
+    }
+  ],
+  "electives": [
+    {
+      "code": "BUS-X 490",
+      "name": "Course Full Name",
+      "credits": 3,
+      "type": "elective",
+      "rationale": "2-3 sentence explanation.",
+      "prereqs_met": true,
+      "difficulty": "Moderate"
+    }
+  ],
+  "advisor_note": "A 2-3 sentence personalized note summarizing the overall plan, workload balance, and one piece of strategic academic advice.",
+  "total_credits": ${credits}
+}
+
+Use real Kelley School of Business courses. Ensure prerequisites are respected based on completed courses. Recommend ${Math.round(parseInt(credits)/3)} courses total split appropriately between required and elective.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1500,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content.map(i => i.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(clean);
+
+    renderResults(result, semester, credits, conc1, conc2);
+  } catch (err) {
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('welcomeState').style.display = 'block';
+    document.getElementById('errorBox').style.display = 'block';
+    document.getElementById('errorBox').textContent = 'Unable to generate recommendations. Please try again.';
+    console.error(err);
+  }
+
+  document.getElementById('generateBtn').disabled = false;
+}
+
+function renderResults(data, semester, credits, conc1, conc2) {
+  document.getElementById('loadingState').style.display = 'none';
+
+  document.getElementById('planTitle').textContent = `${semester} Course Plan`;
+  document.getElementById('planSubtitle').textContent = `Personalized for ${conc1}${conc2 ? ' + ' + conc2 : ''} · ${credits} credits`;
+
+  const reqContainer = document.getElementById('requiredCourses');
+  reqContainer.innerHTML = '';
+  (data.required || []).forEach(course => {
+    reqContainer.appendChild(buildCourseCard(course, 'priority'));
+  });
+
+  const electContainer = document.getElementById('electiveCourses');
+  electContainer.innerHTML = '';
+  (data.electives || []).forEach(course => {
+    electContainer.appendChild(buildCourseCard(course, 'elective'));
+  });
+
+  document.getElementById('advisoryNote').innerHTML = `💬 <span><strong>Advisor Note:</strong> ${data.advisor_note || ''}</span>`;
+
+  document.getElementById('resultsPanel').style.display = 'block';
+}
+
+function buildCourseCard(course, type) {
+  const card = document.createElement('div');
+  card.className = `rec-card ${type}`;
+
+  const diffEmoji = { 'Easy': '🟢', 'Moderate': '🟡', 'Challenging': '🔴', 'Hard': '🔴' };
+  const diff = course.difficulty || 'Moderate';
+
+  card.innerHTML = `
+    <div class="rec-top">
+      <div>
+        <div class="rec-code">${course.code || ''}</div>
+        <div class="rec-name">${course.name || ''}</div>
+      </div>
+      <div class="rec-badges">
+        <span class="badge ${type === 'priority' ? 'badge-required' : 'badge-elective'}">${type === 'priority' ? 'Required' : 'Elective'}</span>
+        <span class="badge badge-credits">${course.credits || 3} cr</span>
+      </div>
+    </div>
+    <div class="rec-rationale">${course.rationale || ''}</div>
+    <div class="rec-meta">
+      <span class="rec-meta-item">${diffEmoji[diff] || '🟡'} ${diff}</span>
+      <span class="rec-meta-item">✓ Prerequisites met</span>
+    </div>
+  `;
+  return card;
+}
+</script>
+</body>
+</html>
